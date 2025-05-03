@@ -1,0 +1,5 @@
+# Ignorar configuración del IDE
+.idea/
+
+# docker logs -f temporal-hw > log.txt
+log.txt
