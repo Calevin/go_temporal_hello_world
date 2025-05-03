@@ -1,0 +1,44 @@
+version: '3.7'
+
+services:
+  postgres:
+    image: postgres:13
+    container_name: temporal-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: temporal
+      POSTGRES_PASSWORD: temporal
+      POSTGRES_DB: temporal
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U temporal"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  temporal-hw:
+    image: temporalio/auto-setup:1.23.1
+    container_name: temporal-hw
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      - DB=postgresql
+      - DB_PORT=5432
+      - POSTGRES_USER=temporal
+      - POSTGRES_PWD=temporal
+      - POSTGRES_SEEDS=postgres
+      - ENABLE_ES=false
+      - TEMPORAL_CLI_ADDRESS=temporal:7233
+      - TEMPORAL_WEB_ENABLED=true
+    ports:
+      - "7233:7233"
+  temporal-web:
+    image: temporalio/ui:latest
+    container_name: temporal-web
+    environment:
+      - TEMPORAL_ADDRESS=temporal-hw:7233
+    ports:
+      - "8233:8080"
+    depends_on:
+      - temporal-hw
