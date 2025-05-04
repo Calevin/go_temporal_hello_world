@@ -15,25 +15,51 @@ func main() {
 	defer c.Close()
 
 	// Opciones del workflow
-	options := client.StartWorkflowOptions{
+	optionsHW := client.StartWorkflowOptions{
 		ID:        "workflow-hola-mundo",
 		TaskQueue: "hola-mundo-task-queue",
 	}
 
 	// Ejecutar el workflow
-	we, err := c.ExecuteWorkflow(context.Background(), options, HelloWorldWorkflow, "Sebastián")
+	weHW, err := c.ExecuteWorkflow(context.Background(), optionsHW, HelloWorldWorkflow, "Sebastián")
 	if err != nil {
 		log.Fatalln("Error al ejecutar el workflow:", err)
 	}
 
-	log.Println("Workflow lanzado:", "ID:", we.GetID(), "RunID:", we.GetRunID())
+	log.Println("Workflow HelloWorld lanzado:", "ID:", weHW.GetID(), "RunID:", weHW.GetRunID())
 
 	// Esperar el resultado
 	var result string
-	err = we.Get(context.Background(), &result)
+	err = weHW.Get(context.Background(), &result)
 	if err != nil {
-		log.Fatalln("Error al obtener el resultado:", err)
+		log.Fatalln("Error al obtener el resultado workflow HelloWorld:", err)
 	}
 
-	log.Println("Resultado del workflow:", result)
+	log.Println("Resultado del workflow HelloWorld:", result)
+
+	// NotificationWorkflow
+	optionsNotification := client.StartWorkflowOptions{
+		ID:        "workflow-envio-email",
+		TaskQueue: "notificaciones-queue",
+	}
+
+	input := EmailInput{
+		To:      "sebastian@ejemplo.com",
+		Subject: "Bienvenido",
+		Body:    "Gracias por unirte a Temporal.",
+	}
+
+	weNot, err := c.ExecuteWorkflow(context.Background(), optionsNotification, NotificationWorkflow, input)
+	if err != nil {
+		log.Fatalln("Error al lanzar el workflow:", err)
+	}
+
+	log.Println("Workflow Notification iniciado:", "ID:", weNot.GetID(), "RunID:", weNot.GetRunID())
+
+	err = weNot.Get(context.Background(), nil)
+	if err != nil {
+		log.Fatalln("Workflow Notification falló:", err)
+	}
+
+	log.Println("Workflow Main finalizó correctamente")
 }

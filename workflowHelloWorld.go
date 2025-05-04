@@ -8,12 +8,12 @@ import (
 // HelloWorldWorkflow primer workflow
 func HelloWorldWorkflow(ctx workflow.Context, name string) (string, error) {
 	logger := workflow.GetLogger(ctx)
-	logger.Info("Workflow iniciado")
+	logger.Info("Workflow HelloWorld iniciado")
 
 	// Simula algo asincrónico
 	_ = workflow.Sleep(ctx, 2*time.Second)
 
 	result := "Hola, " + name + "!"
-	logger.Info("Resultado", "mensaje", result)
+	logger.Info("Resultado de HelloWorld", "mensaje", result)
 	return result, nil
 }
