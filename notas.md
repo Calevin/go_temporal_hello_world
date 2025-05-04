@@ -158,20 +158,5 @@ Cuando un ``````workflow`````` se reanuda (por ejemplo tras un reinicio), vuelve
 * ```Signals```: inputs asíncronos enviados a un ``````workflow`````` desde fuera (por ejemplo desde el cliente)
 * ```Queries```: permiten consultar el estado actual de un ``````workflow`````` sin modificarlo
 
-## Ejemplo:
-
-```mermaid
-graph TD
-  main[main_go_cliente] -->|ExecuteWorkflow| temporal[Temporal Server]
-  temporal -->|tarea en cola| worker[worker.go]
-  worker -->|ejecuta| workflow[NotificationWorkflow]
-  workflow -->|orquesta| send[SendEmail]
-  workflow -->|orquesta| log[SaveLog]
-  send & log -->|resultado| workflow
-  workflow -->|completa| temporal
-  temporal -->|responde| main
-```
-
-
 ## URLs:
 http://localhost:8233/namespaces/default/workflows
